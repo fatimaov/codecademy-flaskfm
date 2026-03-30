@@ -37,4 +37,12 @@ class Song(db.Model):
 		}
 	
 #create the Item model here + add a nice representation method
+class Item(db.Model):
+	id: Mapped[int] = mapped_column(primary_key= True)
+	song_id: Mapped[int] = mapped_column(ForeignKey('song.id'))
+	playlist_id: Mapped[int] = mapped_column(ForeignKey('playlist.id'))
+
+	def __repr__(self):
+		return f"{self.song_id} - {self.playlist_id}"
+	
 #create the Playlist model here + add a nice representation method
