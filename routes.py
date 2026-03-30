@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired
 from app import app, db
 from models import User, Song, Playlist, Item
 from flask import render_template, request, url_for, redirect, flash
+from sqlalchemy import select
 
 #A form for inputing new songs via Dashboard
 class SongForm(FlaskForm):
@@ -35,8 +36,8 @@ def profiles():
 #the user's playlist 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
-   user = User.query.filter_by(id = user_id).first_or_404(description = "No such user found.")
-   songs = Song.query.all()
+   user = db.session.get_or_404(User, user_id, description = "No such user found.")
+   songs = db.session.execute(select(Song)).scalars().all()
    my_playlist = None #change here to a database query
    return render_template('profile.html', user = user, songs = songs, my_playlist = my_playlist)
 
@@ -45,10 +46,10 @@ def profile(user_id):
 @app.route('/add_item/<int:user_id>/<int:song_id>/<int:playlist_id>')
 def add_item(user_id, song_id, playlist_id):
    new_item = Item(song_id = song_id, playlist_id = playlist_id)
-   user = User.query.filter_by(id = user_id).first_or_404(description = "No such user found.")
-   my_playlist = Playlist.query.filter_by(id = user.playlist_id).first()
+   user = db.session.get_or_404(User, user_id, description = "No such user found.")
+   my_playlist = db.session.execute(select(Playlist).where(Playlist.id == user.playlist_id)).scalars().first()
    if not exists(new_item, my_playlist.items):
-      song = Song.query.get(song_id)
+      song = db.session.get(Song, song_id)
       #using db session add the new item
       #increase the counter for the song associated with the new item
       #commit the database changes here
@@ -76,5 +77,5 @@ def dashboard():
   else:
         flash(form.errors)
   unpopular_songs = []  #add the ordering query here
-  songs = Song.query.all()
+  songs = db.session.execute(select(Song)).scalars().all()
   return render_template('dashboard.html', songs = songs, unpopular_songs = unpopular_songs, form = form)
