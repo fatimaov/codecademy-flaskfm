@@ -50,7 +50,7 @@ class Item(db.Model):
 	playlist: Mapped["Playlist"] = relationship("Playlist", back_populates="items")
 
 	def __repr__(self):
-		return f"{self.song_id} - {self.playlist_id}"
+		return f"Song id: {self.song_id} - Playlist id: {self.playlist_id}"
 	
 #create the Playlist model here + add a nice representation method
 class Playlist(db.Model):
@@ -62,4 +62,4 @@ class Playlist(db.Model):
 	items: Mapped[list["Item"]] = relationship("Item", back_populates="playlist", cascade="all, delete-orphan")
 
 	def __repr__(self):
-		return f"{self.user} - {self.id}"
+		return f"User: {self.user} - Playlist id: {self.id}"

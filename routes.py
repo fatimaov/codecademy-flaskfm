@@ -76,12 +76,14 @@ def remove_item(user_id, item_id):
 def dashboard():
   form = SongForm()
   if request.method == 'POST' and form.validate():
-    new_song = None
     #create a new song here
+    new_song = Song(title = form.title.data, artist = form.artist.data, n = 1)
     #add it to the database
+    db.session.add(new_song)
     #commit to the database
+    db.session.commit()
   else:
         flash(form.errors)
-  unpopular_songs = []  #add the ordering query here
+  unpopular_songs = db.session.execute(select(Song).order_by(Song.n.desc())).scalars().all()  #add the ordering query here
   songs = db.session.execute(select(Song)).scalars().all()
   return render_template('dashboard.html', songs = songs, unpopular_songs = unpopular_songs, form = form)
