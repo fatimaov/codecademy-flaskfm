@@ -28,7 +28,7 @@ def exists(item, playlist):
 #renders the home.html template providing the list of current users
 @app.route('/profiles')
 def profiles():
-    current_users = [] #change here to a database query
+    current_users = db.session.execute(select(User)).scalars().all() #change here to a database query
     return render_template('users.html', current_users = current_users)
 
 #Displays profile pages for a user with the user_id primary key
@@ -36,9 +36,9 @@ def profiles():
 #the user's playlist 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
-   user = db.session.get_or_404(User, user_id, description = "No such user found.")
+   user = db.get_or_404(User, user_id, description = "No such user found.")
    songs = db.session.execute(select(Song)).scalars().all()
-   my_playlist = None #change here to a database query
+   my_playlist = db.session.get(Playlist, user.playlist_id) #change here to a database query
    return render_template('profile.html', user = user, songs = songs, my_playlist = my_playlist)
 
 #Adds new songs to a user's playlist from the song library
@@ -46,7 +46,7 @@ def profile(user_id):
 @app.route('/add_item/<int:user_id>/<int:song_id>/<int:playlist_id>')
 def add_item(user_id, song_id, playlist_id):
    new_item = Item(song_id = song_id, playlist_id = playlist_id)
-   user = db.session.get_or_404(User, user_id, description = "No such user found.")
+   user = db.get_or_404(User, user_id, description = "No such user found.")
    my_playlist = db.session.execute(select(Playlist).where(Playlist.id == user.playlist_id)).scalars().first()
    if not exists(new_item, my_playlist.items):
       song = db.session.get(Song, song_id)
