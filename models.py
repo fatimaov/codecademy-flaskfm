@@ -29,6 +29,9 @@ class Song(db.Model):
 	artist: Mapped[str] = mapped_column(String(120), index = True, nullable = False)
 	title: Mapped[str] = mapped_column(String(120), index = True, nullable = False)
 	n: Mapped[int] = mapped_column(Integer)
+
+	# Relationship One - Many
+	items: Mapped[list["Item"]] = relationship("Item", back_populates="song", cascade="all, delete-orphan")
 		
 	def __repr__(self):
 		return f"{self.title} by {self.artist}"
@@ -48,6 +51,7 @@ class Item(db.Model):
 
 	# Relationship Many - One
 	playlist: Mapped["Playlist"] = relationship("Playlist", back_populates="items")
+	song: Mapped["Song"] = relationship("Song", back_populates="items")
 
 	def __repr__(self):
 		return f"Song id: {self.song_id} - Playlist id: {self.playlist_id}"

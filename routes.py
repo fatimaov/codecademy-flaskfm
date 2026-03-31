@@ -89,3 +89,10 @@ def dashboard():
   unpopular_songs = db.session.execute(select(Song).order_by(Song.n)).scalars().all()  #add the ordering query here
   songs = db.session.execute(select(Song)).scalars().all()
   return render_template('dashboard.html', songs = songs, unpopular_songs = unpopular_songs, form = form)
+
+@app.route('/remove_song/<int:song_id>')
+def remove_song(song_id):
+  song_to_remove = db.get_or_404(Song, song_id, description = "No such song found.")
+  db.session.delete(song_to_remove)
+  db.session.commit()
+  return redirect(url_for('dashboard'))

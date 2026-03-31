@@ -8,7 +8,7 @@
     <h2>Songs:</h2>
 
     {% for song in songs %}
-        <p>{{song}}</p>
+        <p>{{song}} <a href="{{url_for('remove_song', song_id = song.id)}}">Remove from database</a></p>
     {% endfor %}
   </div>
 
