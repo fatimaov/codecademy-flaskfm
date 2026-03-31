@@ -54,7 +54,7 @@ class Item(db.Model):
 	song: Mapped["Song"] = relationship("Song", back_populates="items")
 
 	def __repr__(self):
-		return f"Song id: {self.song_id} - Playlist id: {self.playlist_id}"
+		return f"{self.song.title} by {self.song.artist}"
 	
 #create the Playlist model here + add a nice representation method
 class Playlist(db.Model):
