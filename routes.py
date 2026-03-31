@@ -82,8 +82,10 @@ def dashboard():
     db.session.add(new_song)
     #commit to the database
     db.session.commit()
+    # Redirect after POST
+    return redirect(url_for('dashboard'))
   else:
         flash(form.errors)
-  unpopular_songs = db.session.execute(select(Song).order_by(Song.n.desc())).scalars().all()  #add the ordering query here
+  unpopular_songs = db.session.execute(select(Song).order_by(Song.n)).scalars().all()  #add the ordering query here
   songs = db.session.execute(select(Song)).scalars().all()
   return render_template('dashboard.html', songs = songs, unpopular_songs = unpopular_songs, form = form)
